@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Alerts - Vehicle Monitoring System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-bell"></i> Vehicle Alerts</h2>
+    <div>
+        <button class="btn btn-outline-secondary" onclick="markAllRead()">
+            <i class="fas fa-check"></i> Mark All Read
+        </button>
+        <button class="btn btn-primary" onclick="refreshAlerts()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card border-danger">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle fa-2x text-danger mb-2"></i>
+                <h5 class="text-danger">Critical Alerts</h5>
+                <h3 id="criticalCount">2</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-circle fa-2x text-warning mb-2"></i>
+                <h5 class="text-warning">Warning Alerts</h5>
+                <h3 id="warningCount">3</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <i class="fas fa-info-circle fa-2x text-info mb-2"></i>
+                <h5 class="text-info">Info Alerts</h5>
+                <h3 id="infoCount">1</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>Recent Alerts</h5>
+    </div>
+    <div class="card-body">
+        <div class="alert-filter mb-3">
+            <select class="form-select" id="alertFilter" onchange="filterAlerts()">
+                <option value="">All Alerts</option>
+                <option value="critical">Critical</option>
+                <option value="warning">Warning</option>
+                <option value="info">Info</option>
+            </select>
+        </div>
+        
+        <div id="alertsList">
+            {% for alert in alerts %}
+            <div class="alert alert-warning alert-dismissible fade show alert-item" role="alert" data-type="warning">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle"></i> {{ alert.type }}
+                        </h6>
+                        <p class="mb-1">Vehicle: <strong>{{ alert.vehicle }}</strong></p>
+                        <small class="text-muted">{{ alert.time }}</small>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewAlert('{{ alert.id }}')">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterAlerts() {
+    var filter = document.getElementById('alertFilter').value;
+    var alerts = document.querySelectorAll('.alert-item');
+    
+    alerts.forEach(function(alert) {
+        if (!filter || alert.dataset.type === filter) {
+            alert.style.display = 'block';
+        } else {
+            alert.style.display = 'none';
+        }
+    });
+}
+
+function markAllRead() {
+    var alerts = document.querySelectorAll('.alert-item');
+    alerts.forEach(function(alert) {
+        alert.style.opacity = '0.5';
+    });
+    alert('All alerts marked as read!');
+}
+
+function refreshAlerts() {
+    window.location.reload();
+}
+
+function viewAlert(id) {
+    alert('Viewing alert details for ID: ' + id + '\nDetailed view coming soon!');
+}
+
+function loadMoreAlerts() {
+    alert('Loading more alerts...\nPagination feature coming soon!');
+}
+</script>
+{% endblock %}

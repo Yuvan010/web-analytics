@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Vehicle Monitoring System{% endblock %}
+
+{% block content %}
+<div class="hero-section bg-primary text-white rounded p-5 mb-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h1 class="display-4 fw-bold">Vehicle Monitoring Made Simple</h1>
+            <p class="lead">Track your fleet in real-time with our comprehensive monitoring solution.</p>
+            <a href="/dashboard" class="btn btn-light btn-lg">
+                <i class="fas fa-chart-line"></i> View Dashboard
+            </a>
+        </div>
+        <div class="col-md-6 text-center">
+            <i class="fas fa-car fa-10x opacity-50"></i>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-map-marker-alt fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Real-Time Tracking</h5>
+                <p class="card-text">Monitor vehicle locations and routes in real-time.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-bell fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">Smart Alerts</h5>
+                <p class="card-text">Get instant notifications for important events.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-bar fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Analytics</h5>
+                <p class="card-text">Comprehensive reports and fleet analytics.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <h3>Recent Vehicle Activity</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Plate</th>
+                        <th>Model</th>
+                        <th>Status</th>
+                        <th>Location</th>
+                        <th>Last Update</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicles %}
+                    <tr>
+                        <td><strong>{{ vehicle.plate }}</strong></td>
+                        <td>{{ vehicle.model }}</td>
+                        <td>
+                            <span class="status-{{ vehicle.status.lower() }}">
+                                <i class="fas fa-circle"></i> {{ vehicle.status }}
+                            </span>
+                        </td>
+                        <td>{{ vehicle.location }}</td>
+                        <td>{{ vehicle.last_update }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center mt-3">
+            <a href="/fleet" class="btn btn-primary">View All Vehicles</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

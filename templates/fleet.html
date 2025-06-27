@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Fleet Management - Vehicle Monitoring System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-truck"></i> Fleet Management</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addVehicleModal">
+        <i class="fas fa-plus"></i> Add Vehicle
+    </button>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input type="text" class="form-control" id="searchInput" placeholder="Search vehicles..." onkeyup="filterVehicles()">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <select class="form-select" id="statusFilter" onchange="filterVehicles()">
+            <option value="">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Maintenance">Maintenance</option>
+            <option value="Inactive">Inactive</option>
+        </select>
+    </div>
+</div>
+
+<div class="row" id="vehicleGrid">
+    {% for vehicle in vehicles %}
+    <div class="col-md-6 col-lg-4 mb-4 vehicle-card" data-status="{{ vehicle.status }}" data-plate="{{ vehicle.plate }}" data-model="{{ vehicle.model }}">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">{{ vehicle.plate }}</h6>
+                <span class="badge bg-{{ 'success' if vehicle.status == 'Active' else 'warning' }}">
+                    {{ vehicle.status }}
+                </span>
+            </div>
+            <div class="card-body">
+                <h6 class="card-title">{{ vehicle.model }}</h6>
+                <p class="card-text">
+                    <i class="fas fa-map-marker-alt text-primary"></i> {{ vehicle.location }}<br>
+                    <i class="fas fa-clock text-muted"></i> {{ vehicle.last_update }}
+                </p>
+                <div class="btn-group w-100" role="group">
+                    <button class="btn btn-outline-primary btn-sm" onclick="viewDetails('{{ vehicle.id }}')">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                    <button class="btn btn-outline-success btn-sm" onclick="trackVehicle('{{ vehicle.plate }}')">
+                        <i class="fas fa-route"></i> Track
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Add Vehicle Modal -->
+<div class="modal fade" id="addVehicleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Vehicle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addVehicleForm">
+                    <div class="mb-3">
+                        <label class="form-label">License Plate</label>
+                        <input type="text" class="form-control" id="plateInput" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Vehicle Model</label>
+                        <input type="text" class="form-control" id="modelInput" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Current Location</label>
+                        <input type="text" class="form-control" id="locationInput">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addVehicle()">Add Vehicle</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterVehicles() {
+    var searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    var statusFilter = document.getElementById('statusFilter').value;
+    var cards = document.querySelectorAll('.vehicle-card');
+    
+    cards.forEach(function(card) {
+        var plate = card.dataset.plate.toLowerCase();
+        var model = card.dataset.model.toLowerCase();
+        var status = card.dataset.status;
+        
+        var matchesSearch = plate.includes(searchTerm) || model.includes(searchTerm);
+        var matchesStatus = !statusFilter || status === statusFilter;
+        
+        card.style.display = matchesSearch && matchesStatus ? 'block' : 'none';
+    });
+}
+
+function addVehicle() {
+    var plate = document.getElementById('plateInput').value;
+    var model = document.getElementById('modelInput').value;
+    var location = document.getElementById('locationInput').value;
+    
+    fetch('/api/add_vehicle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({plate: plate, model: model, location: location})
+    })
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+        if (data.success) {
+            window.location.reload();
+        }
+    });
+}
+
+function viewDetails(id) {
+    alert('Vehicle details for ID: ' + id);
+}
+
+function trackVehicle(plate) {
+    alert('Tracking vehicle: ' + plate);
+}
+</script>
+{% endblock %}

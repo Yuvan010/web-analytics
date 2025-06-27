@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Vehicle Monitoring System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+    <button class="btn btn-success" onclick="refreshData()">
+        <i class="fas fa-sync-alt"></i> Refresh
+    </button>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 id="totalVehicles">{{ vehicles|length }}</h4>
+                        <p class="mb-0">Total Vehicles</p>
+                    </div>
+                    <i class="fas fa-car fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 id="activeVehicles">{{ vehicles|selectattr("status", "equalto", "Active")|list|length }}</h4>
+                        <p class="mb-0">Active</p>
+                    </div>
+                    <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 id="maintenanceVehicles">{{ vehicles|selectattr("status", "equalto", "Maintenance")|list|length }}</h4>
+                        <p class="mb-0">Maintenance</p>
+                    </div>
+                    <i class="fas fa-wrench fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ alerts|length }}</h4>
+                        <p class="mb-0">Active Alerts</p>
+                    </div>
+                    <i class="fas fa-exclamation-triangle fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> Vehicle Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Plate</th>
+                                <th>Model</th>
+                                <th>Status</th>
+                                <th>Location</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vehicle in vehicles %}
+                            <tr>
+                                <td>{{ vehicle.plate }}</td>
+                                <td>{{ vehicle.model }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if vehicle.status == 'Active' else 'warning' }}">
+                                        {{ vehicle.status }}
+                                    </span>
+                                </td>
+                                <td>{{ vehicle.location }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="trackVehicle('{{ vehicle.plate }}')">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-bell"></i> Recent Alerts</h5>
+            </div>
+            <div class="card-body">
+                {% for alert in alerts %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>{{ alert.type }}</strong><br>
+                    Vehicle: {{ alert.vehicle }}<br>
+                    <small class="text-muted">{{ alert.time }}</small>
+                </div>
+                {% endfor %}
+                <a href="/alerts" class="btn btn-primary btn-sm">View All Alerts</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function refreshData() {
+    fetch('/api/vehicle_status')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('totalVehicles').textContent = data.total;
+            document.getElementById('activeVehicles').textContent = data.active;
+            document.getElementById('maintenanceVehicles').textContent = data.maintenance;
+        });
+}
+
+function trackVehicle(plate) {
+    alert('Tracking vehicle: ' + plate + '\nFeature coming soon!');
+}
+
+// Auto-refresh every 30 seconds
+setInterval(refreshData, 30000);
+</script>
+{% endblock %}

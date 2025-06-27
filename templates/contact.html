@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - Vehicle Monitoring System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2><i class="fas fa-envelope"></i> Contact Us</h2>
+        <p class="lead">Get in touch with our support team for any questions or assistance.</p>
+        
+        {% if request.args.get('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> Thank you for your message! We'll get back to you soon.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endif %}
+        
+        <form method="POST" action="/submit_contact" id="contactForm">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="name" class="form-label">Full Name *</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">Email Address *</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="subject" class="form-label">Subject</label>
+                <select class="form-select" id="subject" name="subject">
+                    <option value="">Select a topic</option>
+                    <option value="technical-support">Technical Support</option>
+                    <option value="billing">Billing Question</option>
+                    <option value="feature-request">Feature Request</option>
+                    <option value="general">General Inquiry</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="message" class="form-label">Message *</label>
+                <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-paper-plane"></i> Send Message
+            </button>
+        </form>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Contact Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6><i class="fas fa-phone text-primary"></i> Phone</h6>
+                    <p class="mb-1">+1 (555) 123-4567</p>
+                    <small class="text-muted">Mon-Fri, 9AM-6PM EST</small>
+                </div>
+                <div class="mb-3">
+                    <h6><i class="fas fa-envelope text-primary"></i> Email</h6>
+                    <p class="mb-0">support@vehicletrack.com</p>
+                </div>
+                <div class="mb-3">
+                    <h6><i class="fas fa-map-marker-alt text-primary"></i> Address</h6>
+                    <p class="mb-0">123 Tech Street<br>Innovation City, IC 12345</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5><i class="fas fa-question-circle"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <button class="btn btn-outline-primary btn-sm mb-2 w-100" onclick="openChat()">
+                    <i class="fas fa-comments"></i> Live Chat
+                </button>
+                <button class="btn btn-outline-success btn-sm mb-2 w-100" onclick="requestCallback()">
+                    <i class="fas fa-phone-alt"></i> Request Callback
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    var name = document.getElementById('name').value;
+    var email = document.getElementById('email').value;
+    var message = document.getElementById('message').value;
+    
+    if (!name || !email || !message) {
+        e.preventDefault();
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        e.preventDefault();
+        alert('Please enter a valid email address.');
+        return;
+    }
+});
+
+function openChat() {
+    alert('Live chat feature coming soon!');
+}
+
+function requestCallback() {
+    var phone = prompt('Please enter your phone number for callback:');
+    if (phone) {
+        alert('Callback requested for: ' + phone);
+    }
+}
+</script>
+{% endblock %}
